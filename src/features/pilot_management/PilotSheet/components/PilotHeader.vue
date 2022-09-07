@@ -1,27 +1,27 @@
 <template>
-  <div :style="`height: ${$vuetify.breakpoint.mdAndUp ? '155px' : '45px'};`">
+  <div :style="`height: ${$vuetify.breakpoint.mdAndUp ? '155px' : '45px'};`" :class="`${$vuetify.breakpoint.smAndDown ? (this.fullNameVisible ? 'mb-16' : 'mb-12') : ''}`">
     <div id="header-container">
-      <v-row dense class="pt-9 ml-2" style="width: 97vw">
+      <v-row dense class="pt-9 pb-2 ml-2" style="width: 97vw">
         <v-col>
           <v-row
             dense
-            :style="`height: ${$vuetify.breakpoint.mdAndUp ? '60px' : '45px'};`"
-            align="end"
-            align-md="start"
+            :style="`height: ${$vuetify.breakpoint.mdAndUp ? '60px' : 'auto'};`"
+            :class="`${$vuetify.breakpoint.xsOnly ? 'justify-center ' : 'justify-space-between '}'pb-xs-3`"
           >
             <v-col cols="auto">
               <div
                 :class="`heading ${
                   $vuetify.breakpoint.lgAndUp ? 'h1' : $vuetify.breakpoint.mdAndUp ? 'h1' : 'h3'
                 }`"
-                style="
+                :style="`
                   letter-spacing: 10px;
                   overflow: hidden;
-                  white-space: nowrap;
-                  text-overflow: ellipsis;
+                  white-space: ${this.fullNameVisible ? 'normal' : 'nowrap'};
+                  text-overflow: ellipsis;`
                 "
+                @click="toggleCallsignOverflow"
               >
-                {{ pilot.Callsign }}
+                {{ pilot.Callsign }} Super Long Name
                 <cc-tooltip
                   inline
                   v-if="pilot.CloudController.IsRemoteResource"
@@ -33,7 +33,7 @@
                 </cc-tooltip>
               </div>
             </v-col>
-            <v-col v-if="$vuetify.breakpoint.smAndDown" cols="auto" class="ml-auto">
+            <v-col v-if="$vuetify.breakpoint.smAndDown" cols="auto">
               <cc-tooltip
                 v-if="!isLevelingUp"
                 delayed
@@ -271,7 +271,16 @@ import { Mech } from '@/class'
 export default vueMixins(activePilot).extend({
   name: 'pilot-header',
   components: { LevelEditDialog, PilotRegistrationCard },
-
+  data() {
+      return {
+        fullNameVisible: false
+      }
+  },
+  methods: {
+    toggleCallsignOverflow(): void {
+      this.fullNameVisible = !this.fullNameVisible;
+    }
+  },
   computed: {
     isLevelingUp(): boolean {
       return this.$route.name === 'pilot-level-wizard'
@@ -288,7 +297,7 @@ export default vueMixins(activePilot).extend({
 <style scoped>
 #header-container {
   position: absolute;
-  top: 0;
+  top: 15px;
   left: 0;
   width: 100vw;
   background-color: var(--v-primary-base);
